@@ -64,7 +64,8 @@ the GraphLoader utility class to convert these files into an intersections
 file, which is suitable for use in the graph visualization tool we 
 introduce in the assignment in week 1.
 
-1. Navigate the map to the section you would like to collect data for. The application will fetch all of the road data in the visible part of the map. 
+1. Navigate the map to the section you would like to collect data for. The 
+application will fetch all of the road data in the visible part of the map. 
 Note: Make sure this region is not too big or the file will be gigantic 
 and it will take forever to download. The data for a single small to 
 medium city is about as large as we recommend.
@@ -90,10 +91,13 @@ then save that file. Your new map will appear in the list when you open
 the Map app in the future.
 
 Congratulations! You now have a custom map data file that you can use 
-in all of the assignments. However, if you want to use it in the graph visualization tool next week, keep reading.
+in all of the assignments. However, if you want to use it in the graph 
+visualization tool next week, keep reading.
 
-5. In the main method of the util.GraphLoader class (in the file util/GraphLoader.java just above the class header for the RoadLineInfo class, 
-which is declared in the same file), you will see the following code:
+5. In the main method of the util.GraphLoader class 
+(in the file util/GraphLoader.java just above the class header for the 
+RoadLineInfo class, which is declared in the same file), you will see 
+the following code:
 
 public static void main(String[] args) {
     //...
