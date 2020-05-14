@@ -121,14 +121,12 @@ public abstract class Graph {
 	 * @return The degree sequence of this graph.
 	 */
 	public List<Integer> degreeSequence() {
-		// XXX: Implement in part 1 of week 2
 		List<Integer> degrees = new ArrayList<Integer>(numVertices);
 		for(int k=0; k<numVertices;k++) {
 			Integer currDegree = getNeighbors(k).size() + getInNeighbors(k).size();
 			degrees.add(currDegree);
 		}
 		Collections.sort(degrees,Collections.reverseOrder());
-		//System.out.println("Num of Degrees "+degree.size() );
 		return degrees;
 	}
 	
@@ -137,7 +135,6 @@ public abstract class Graph {
 	 * @param v The starting vertex
 	 * @return A list of the vertices that can be reached in exactly two hops (by 
 	 * following two edges) from vertex v.
-	 * XXX: Implement in part 2 of week 2 for each subclass of Graph
 	 */
 	public abstract List<Integer> getDistance2(int v); 
 

@@ -106,7 +106,6 @@ public class GraphAdjMatrix extends Graph {
 	 * @return List<Integer> a list of indices of vertices.  
 	 */	
 	public List<Integer> getDistance2(int v) {
-		// XXX Implement this method in week 2
 		twoMatrix = new int[getNumVertices()][getNumVertices()];
 		populateTwoMatrix();
 		List<Integer> twoNeigh = new ArrayList<Integer>();
@@ -118,13 +117,6 @@ public class GraphAdjMatrix extends Graph {
 				}
 			}
 		}
-//		System.out.println(twoNeigh.size());
-//		for(int k=0;k<getNumVertices();k++) {
-//			for (int j=0;j<getNumVertices();j++) {
-//				System.out.print("\t"+adjMatrix[k][j]);
-//			}
-//			System.out.println();
-//		}
 		
 		return twoNeigh;
 	}
@@ -143,11 +135,6 @@ public class GraphAdjMatrix extends Graph {
 			}
 		}
 		
-//		for(int row=0; row < adjMatrix.length; row++) {
-//			for(int col=0; col < adjMatrix.length;col++) {
-//				System.out.println(adjMatrix[row][col]);
-//			}
-//		}
 	}
 	
 	/** 
