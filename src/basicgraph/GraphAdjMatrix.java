@@ -20,10 +20,12 @@ public class GraphAdjMatrix extends Graph {
 
 	private final int defaultNumVertices = 5;
 	private int[][] adjMatrix;
+	private int[][] twoMatrix;
 	
 	/** Create a new empty Graph */
 	public GraphAdjMatrix () {
 		adjMatrix = new int[defaultNumVertices][defaultNumVertices];
+		twoMatrix = new int[defaultNumVertices][defaultNumVertices];
 	}
 	
 	/** 
@@ -105,8 +107,65 @@ public class GraphAdjMatrix extends Graph {
 	 */	
 	public List<Integer> getDistance2(int v) {
 		// XXX Implement this method in week 2
-		return null;
+		twoMatrix = new int[getNumVertices()][getNumVertices()];
+		populateTwoMatrix();
+		List<Integer> twoNeigh = new ArrayList<Integer>();
+		for(int k=0;k<getNumVertices();k++) {
+			int currDegree = twoMatrix[v][k];
+			if(currDegree != 0) {
+				for(int currNeigh=0;currNeigh<currDegree;currNeigh++) {
+					twoNeigh.add(k);
+				}
+			}
+		}
+//		System.out.println(twoNeigh.size());
+//		for(int k=0;k<getNumVertices();k++) {
+//			for (int j=0;j<getNumVertices();j++) {
+//				System.out.print("\t"+adjMatrix[k][j]);
+//			}
+//			System.out.println();
+//		}
+		
+		return twoNeigh;
 	}
+	
+	/** 
+	 * Populate the twoMatrix through matrix multiplication
+	 * of adjMatrix times itself.
+	 * 
+	 * @param v the index of vertex.
+	 * @return 
+	 */	
+	private void populateTwoMatrix() {
+		for(int row=0; row < getNumVertices(); row++) {
+			for(int col=0; col < getNumVertices();col++) {
+				twoMatrix[row][col] = matrixCellMult(row,col);
+			}
+		}
+		
+//		for(int row=0; row < adjMatrix.length; row++) {
+//			for(int col=0; col < adjMatrix.length;col++) {
+//				System.out.println(adjMatrix[row][col]);
+//			}
+//		}
+	}
+	
+	/** 
+	 * Calculate one cell of a matrix
+	 * 
+	 * @param row the current row 
+	 * @param col the current column
+	 * @return int the sum value of a certain cell in the matrix
+	 */	
+	private int matrixCellMult(int row, int col) {
+		int sum = 0;
+		for(int k=0;k<getNumVertices();k++) {
+			sum+= adjMatrix[row][k] * adjMatrix[k][col];
+		}
+		return sum;
+	}
+	
+	
 	
 	/**
 	 * Generate string representation of adjacency matrix

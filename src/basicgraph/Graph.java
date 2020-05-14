@@ -122,7 +122,14 @@ public abstract class Graph {
 	 */
 	public List<Integer> degreeSequence() {
 		// XXX: Implement in part 1 of week 2
-		return null;
+		List<Integer> degrees = new ArrayList<Integer>(numVertices);
+		for(int k=0; k<numVertices;k++) {
+			Integer currDegree = getNeighbors(k).size() + getInNeighbors(k).size();
+			degrees.add(currDegree);
+		}
+		Collections.sort(degrees,Collections.reverseOrder());
+		//System.out.println("Num of Degrees "+degree.size() );
+		return degrees;
 	}
 	
 	/**
@@ -235,6 +242,7 @@ public abstract class Graph {
 		// For testing of Part 1 functionality
 		// Add your tests here to make sure your degreeSequence method is returning
 		// the correct list, after examining the graphs.
+		
 		System.out.println("Loading graphs based on real data...");
 		System.out.println("Goal: use degree sequence to analyse graphs.");
 		
