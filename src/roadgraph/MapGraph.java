@@ -8,6 +8,8 @@
 package roadgraph;
 
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -24,7 +26,9 @@ import util.GraphLoader;
  */
 public class MapGraph {
 	//TODO: Add your member variables here in WEEK 3
-	
+	private HashMap<GeographicPoint, MapNode> mainMap;
+	private int numNodes;
+	private int numEdges;
 	
 	/** 
 	 * Create a new empty MapGraph 
@@ -32,6 +36,9 @@ public class MapGraph {
 	public MapGraph()
 	{
 		// TODO: Implement in this constructor in WEEK 3
+		mainMap = new HashMap<GeographicPoint, MapNode>();
+		numNodes = 0;
+		numEdges = 0;
 	}
 	
 	/**
@@ -40,8 +47,8 @@ public class MapGraph {
 	 */
 	public int getNumVertices()
 	{
-		//TODO: Implement this method in WEEK 3
-		return 0;
+		int holder = numNodes;
+		return holder;
 	}
 	
 	/**
@@ -50,8 +57,11 @@ public class MapGraph {
 	 */
 	public Set<GeographicPoint> getVertices()
 	{
-		//TODO: Implement this method in WEEK 3
-		return null;
+		Set<GeographicPoint> vertices = new HashSet<GeographicPoint>();
+		for(GeographicPoint gp : mainMap.keySet()) {
+			vertices.add(gp);
+		}
+		return vertices;
 	}
 	
 	/**
@@ -60,8 +70,8 @@ public class MapGraph {
 	 */
 	public int getNumEdges()
 	{
-		//TODO: Implement this method in WEEK 3
-		return 0;
+		int holder = numEdges;
+		return holder;
 	}
 
 	
@@ -75,8 +85,16 @@ public class MapGraph {
 	 */
 	public boolean addVertex(GeographicPoint location)
 	{
-		// TODO: Implement this method in WEEK 3
-		return false;
+		if(location == null || mainMap.containsKey(location)) {
+			return false;
+		}
+		else {
+			MapNode currNode = new MapNode(location);
+			mainMap.put(location, currNode);
+			numNodes += 1;
+			return true;
+		}
+		
 	}
 	
 	/**
@@ -95,10 +113,34 @@ public class MapGraph {
 			String roadType, double length) throws IllegalArgumentException {
 
 		//TODO: Implement this method in WEEK 3
+		if(!mainMap.containsKey(from) || !mainMap.containsKey(to)
+				|| length < 0 || from == null || to == null || roadName == null
+				|| roadType == null) {
+			throw new IllegalArgumentException();
+		}
+		
+		implementAddEdge(from,to,roadName,roadType,length);
 		
 	}
 	
-
+	/**
+	 * Actual implementation of adding an edge of the graph
+	 * 
+	 * @param from The starting point of the edge
+	 * @param to The ending point of the edge
+	 * @param roadName The name of the road
+	 * @param roadType The type of the road
+	 * @param length The length of the road, in km
+	 *
+	 */
+	private void implementAddEdge(GeographicPoint from, GeographicPoint to, String roadName,
+			String roadType, double length) {
+		MapEdge currEdge = new MapEdge(from,to,roadName,roadType,length);
+		MapNode startNode = mainMap.get(from);
+		startNode.addAdjEdge(currEdge);
+		numEdges += 1;
+	}
+	
 	/** Find the path from start to goal using breadth first search
 	 * 
 	 * @param start The starting location
@@ -197,6 +239,10 @@ public class MapGraph {
 		return null;
 	}
 
+	//delete this
+	public HashMap<GeographicPoint, MapNode> getMap(){
+		return mainMap;
+	}
 	
 	
 	public static void main(String[] args)
@@ -206,6 +252,21 @@ public class MapGraph {
 		System.out.print("DONE. \nLoading the map...");
 		GraphLoader.loadRoadMap("data/testdata/simpletest.map", firstMap);
 		System.out.println("DONE.");
+		
+		//checking if vertices are printed
+//		for(GeographicPoint gp : firstMap.getVertices()) {
+//			System.out.println(gp);
+//		}
+		
+		//checking if edges are printed
+//		for(GeographicPoint gp : firstMap.getMap().keySet()) {
+//			MapNode currNode = firstMap.getMap().get(gp);
+//			List<MapEdge> currList = currNode.getAllEdges();
+//			for(MapEdge me: currList) {
+//				System.out.println();
+//				System.out.print(me.getStart()+"\t"+me.getEnd()+"\t"+me.getRoadName());
+//			}
+//		}
 		
 		// You can use this method for testing.  
 		
