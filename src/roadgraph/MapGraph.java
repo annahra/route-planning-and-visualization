@@ -8,9 +8,12 @@
 package roadgraph;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -169,8 +172,52 @@ public class MapGraph {
 		
 		// Hook for visualization.  See writeup.
 		//nodeSearched.accept(next.getLocation());
-
-		return null;
+		
+		//initialization
+		List<MapNode> queue = new LinkedList<MapNode>();
+		queue.add(mainMap.get(start));
+		Set<MapNode> visited = new HashSet<MapNode>();
+		visited.add(mainMap.get(start));
+		Map<MapNode, MapNode> parentMap = new HashMap<MapNode,MapNode>();
+		boolean found = false;
+		MapNode currNode = mainMap.get(start);
+		MapNode goalNode = new MapNode(goal);
+		
+		//search graph
+		while(queue.size()!=0) {
+			currNode = queue.remove(0);
+			if(currNode.getCoord().equals(goal)) {
+				found = true;
+				goalNode = currNode;
+				break;
+			}
+			List<MapNode> neighbors = currNode.getNeighbors();
+			System.out.println(neighbors.size());
+			for(MapNode nextNode : neighbors) {
+				if(!visited.contains(nextNode)) {
+					visited.add(nextNode);
+					parentMap.put(nextNode,currNode);
+					queue.add(nextNode);
+					System.out.println("We've added into visisted");
+				}
+			}
+		}
+		
+		//for case not found
+		if(!found) {
+			System.out.println("No path exists");
+			return new LinkedList<GeographicPoint>();
+		}
+		
+		//reconstruct path
+		List<GeographicPoint> path = new LinkedList<GeographicPoint>();
+		MapNode currPathNode = goalNode;
+		while(!currPathNode.getCoord().equals(start)) {
+			((LinkedList<GeographicPoint>) path).addFirst(currPathNode.getCoord());
+			currPathNode = parentMap.get(currPathNode);
+		}
+		((LinkedList<GeographicPoint>) path).addFirst(start);
+		return path;
 	}
 	
 
@@ -253,9 +300,27 @@ public class MapGraph {
 		GraphLoader.loadRoadMap("data/testdata/simpletest.map", firstMap);
 		System.out.println("DONE.");
 		
+		GeographicPoint start = new GeographicPoint(1,1);
+		GeographicPoint end = new GeographicPoint(8,-1);
+		List<GeographicPoint> path = firstMap.bfs(start, end);
+		for(GeographicPoint gp : path) {
+			System.out.println(gp);
+		}
+		
 		//checking if vertices are printed
 //		for(GeographicPoint gp : firstMap.getVertices()) {
 //			System.out.println(gp);
+//		}
+		
+		//check if neighbors of first node are printing correctly
+//		for(GeographicPoint gp: firstMap.getMap().keySet()) {
+//			System.out.println("-------------");
+//			MapNode currNode = firstMap.getMap().get(gp);
+//			List<MapNode> currNeigh = currNode.getNeighbors();
+//			for(MapNode mn : currNeigh) {
+//				System.out.println(mn.getCoord());
+//			}
+//			System.out.println("-------------");
 //		}
 		
 		//checking if edges are printed
