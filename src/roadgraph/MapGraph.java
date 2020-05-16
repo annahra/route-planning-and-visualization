@@ -168,10 +168,6 @@ public class MapGraph {
 	public List<GeographicPoint> bfs(GeographicPoint start, 
 			 					     GeographicPoint goal, Consumer<GeographicPoint> nodeSearched)
 	{
-		// TODO: Implement this method in WEEK 3
-		
-		// Hook for visualization.  See writeup.
-		//nodeSearched.accept(next.getLocation());
 		
 		//initialization
 		List<MapNode> queue = new LinkedList<MapNode>();
@@ -181,6 +177,7 @@ public class MapGraph {
 		Map<MapNode, MapNode> parentMap = new HashMap<MapNode,MapNode>();
 		boolean found = false;
 		MapNode currNode = mainMap.get(start);
+		MapNode nextNode = mainMap.get(start);
 		MapNode goalNode = new MapNode(goal);
 		
 		//search graph
@@ -191,14 +188,14 @@ public class MapGraph {
 				goalNode = currNode;
 				break;
 			}
-			List<MapNode> neighbors = currNode.getNeighbors();
-			System.out.println(neighbors.size());
-			for(MapNode nextNode : neighbors) {
+			List<GeographicPoint> neighbors = currNode.getNeighbors();
+			for(GeographicPoint nextGP : neighbors) {
+				nextNode = mainMap.get(nextGP);
 				if(!visited.contains(nextNode)) {
 					visited.add(nextNode);
 					parentMap.put(nextNode,currNode);
 					queue.add(nextNode);
-					System.out.println("We've added into visisted");
+					nodeSearched.accept(nextNode.getCoord());
 				}
 			}
 		}
@@ -206,10 +203,23 @@ public class MapGraph {
 		//for case not found
 		if(!found) {
 			System.out.println("No path exists");
-			return new LinkedList<GeographicPoint>();
+			return null;
 		}
 		
-		//reconstruct path
+		return reconstructPath(parentMap,goalNode,start);
+	}
+	
+	
+	/** Reconstructs the path given a parentMap to reconstruct from and a start node
+	 * we are beginning at and a goal node we are ending at.
+	 * 
+	 * @param start The starting location
+	 * @param goal The goal location
+	 * @param parentMap A map of the path it took to get from start to goal
+	 * @return The list of GeographicPoints that constitute as the path from start to goal 
+	 */
+	private List<GeographicPoint> reconstructPath(Map<MapNode,MapNode> parentMap, MapNode goalNode,
+									GeographicPoint start){
 		List<GeographicPoint> path = new LinkedList<GeographicPoint>();
 		MapNode currPathNode = goalNode;
 		while(!currPathNode.getCoord().equals(start)) {
@@ -220,7 +230,6 @@ public class MapGraph {
 		return path;
 	}
 	
-
 	/** Find the path from start to goal using Dijkstra's algorithm
 	 * 
 	 * @param start The starting location
@@ -286,11 +295,6 @@ public class MapGraph {
 		return null;
 	}
 
-	//delete this
-	public HashMap<GeographicPoint, MapNode> getMap(){
-		return mainMap;
-	}
-	
 	
 	public static void main(String[] args)
 	{
@@ -300,38 +304,6 @@ public class MapGraph {
 		GraphLoader.loadRoadMap("data/testdata/simpletest.map", firstMap);
 		System.out.println("DONE.");
 		
-		GeographicPoint start = new GeographicPoint(1,1);
-		GeographicPoint end = new GeographicPoint(8,-1);
-		List<GeographicPoint> path = firstMap.bfs(start, end);
-		for(GeographicPoint gp : path) {
-			System.out.println(gp);
-		}
-		
-		//checking if vertices are printed
-//		for(GeographicPoint gp : firstMap.getVertices()) {
-//			System.out.println(gp);
-//		}
-		
-		//check if neighbors of first node are printing correctly
-//		for(GeographicPoint gp: firstMap.getMap().keySet()) {
-//			System.out.println("-------------");
-//			MapNode currNode = firstMap.getMap().get(gp);
-//			List<MapNode> currNeigh = currNode.getNeighbors();
-//			for(MapNode mn : currNeigh) {
-//				System.out.println(mn.getCoord());
-//			}
-//			System.out.println("-------------");
-//		}
-		
-		//checking if edges are printed
-//		for(GeographicPoint gp : firstMap.getMap().keySet()) {
-//			MapNode currNode = firstMap.getMap().get(gp);
-//			List<MapEdge> currList = currNode.getAllEdges();
-//			for(MapEdge me: currList) {
-//				System.out.println();
-//				System.out.print(me.getStart()+"\t"+me.getEnd()+"\t"+me.getRoadName());
-//			}
-//		}
 		
 		// You can use this method for testing.  
 		
