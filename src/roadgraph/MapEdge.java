@@ -10,11 +10,11 @@ import geography.GeographicPoint;
 import java.util.List;
 
 public class MapEdge{
-	GeographicPoint start;
-	GeographicPoint end;
-	String roadName;
-	String roadType;
-	double length;
+	private GeographicPoint start;
+	private GeographicPoint end;
+	private String roadName;
+	private String roadType;
+	private double length;
 	
 	public MapEdge(GeographicPoint from, GeographicPoint to, String name,
 					String type, double len) {
