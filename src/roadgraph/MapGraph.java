@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 
 import geography.GeographicPoint;
 import util.GraphLoader;
+import week3example.MazeNode;
 
 /**
  * @author UCSD MOOC development team and YOU
@@ -168,24 +169,28 @@ public class MapGraph {
 	public List<GeographicPoint> bfs(GeographicPoint start, 
 			 					     GeographicPoint goal, Consumer<GeographicPoint> nodeSearched)
 	{
+		if (start == null || goal == null) {
+			System.out.println("Start or goal node is null!  No path exists.");
+			return null;
+		}
 		
 		//initialization
 		List<MapNode> queue = new LinkedList<MapNode>();
 		queue.add(mainMap.get(start));
 		Set<MapNode> visited = new HashSet<MapNode>();
 		visited.add(mainMap.get(start));
-		Map<MapNode, MapNode> parentMap = new HashMap<MapNode,MapNode>();
+		Map<GeographicPoint, GeographicPoint> parentMap = new HashMap<GeographicPoint,GeographicPoint>();
 		boolean found = false;
 		MapNode currNode = mainMap.get(start);
 		MapNode nextNode = mainMap.get(start);
-		MapNode goalNode = new MapNode(goal);
+
 		
 		//search graph
 		while(queue.size()!=0) {
 			currNode = queue.remove(0);
+			nodeSearched.accept(currNode.getCoord());
 			if(currNode.getCoord().equals(goal)) {
 				found = true;
-				goalNode = currNode;
 				break;
 			}
 			List<GeographicPoint> neighbors = currNode.getNeighbors();
@@ -193,9 +198,9 @@ public class MapGraph {
 				nextNode = mainMap.get(nextGP);
 				if(!visited.contains(nextNode)) {
 					visited.add(nextNode);
-					parentMap.put(nextNode,currNode);
+					parentMap.put(nextNode.getCoord(),currNode.getCoord());
 					queue.add(nextNode);
-					nodeSearched.accept(nextNode.getCoord());
+					//nodeSearched.accept(nextNode.getCoord());
 				}
 			}
 		}
@@ -206,25 +211,24 @@ public class MapGraph {
 			return null;
 		}
 		
-		return reconstructPath(parentMap,goalNode,start);
+		return reconstructPath(parentMap,goal,start);
 	}
 	
-	
-	/** Reconstructs the path given a parentMap to reconstruct from and a start node
-	 * we are beginning at and a goal node we are ending at.
+	/** Reconstructs the path given a parentMap. Starts from the goal GeographicPoint and
+	 * ends at the start geographic point
 	 * 
 	 * @param start The starting location
 	 * @param goal The goal location
 	 * @param parentMap A map of the path it took to get from start to goal
 	 * @return The list of GeographicPoints that constitute as the path from start to goal 
 	 */
-	private List<GeographicPoint> reconstructPath(Map<MapNode,MapNode> parentMap, MapNode goalNode,
+	private List<GeographicPoint> reconstructPath(Map<GeographicPoint,GeographicPoint> parentMap, GeographicPoint goal,
 									GeographicPoint start){
 		List<GeographicPoint> path = new LinkedList<GeographicPoint>();
-		MapNode currPathNode = goalNode;
-		while(!currPathNode.getCoord().equals(start)) {
-			((LinkedList<GeographicPoint>) path).addFirst(currPathNode.getCoord());
-			currPathNode = parentMap.get(currPathNode);
+		GeographicPoint currPathCoord = goal;
+		while(!currPathCoord.equals(start)) {
+			((LinkedList<GeographicPoint>) path).addFirst(currPathCoord);
+			currPathCoord = parentMap.get(currPathCoord);
 		}
 		((LinkedList<GeographicPoint>) path).addFirst(start);
 		return path;
