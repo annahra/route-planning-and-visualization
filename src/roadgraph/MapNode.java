@@ -11,16 +11,76 @@ package roadgraph;
 import geography.GeographicPoint;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
-public class MapNode{
+public class MapNode implements Comparator<MapNode>{
 	private GeographicPoint node;
 	private List<MapEdge> adjEdges;
+	private double distFromStart;
+	private Map<GeographicPoint, Double> nodeToNode;
 	
 	public MapNode(GeographicPoint location) {
 		node = location;
 		adjEdges = new ArrayList<MapEdge>();	
+		nodeToNode = new HashMap<GeographicPoint, Double>();
+		//distFromStart = 0;
+	}
+	public MapNode() {
+		node = null;
+		adjEdges = new ArrayList<MapEdge>();	
+		nodeToNode = new HashMap<GeographicPoint, Double>();
+		//distFromStart = 0;
+	}
+	
+	@Override
+	public int compare(MapNode mp1, MapNode mp2) {
+		if(mp1.getDistFromStart() < mp2.getDistFromStart()) {return -1;}
+		if(mp1.getDistFromStart() > mp2.getDistFromStart()) {return 1;}
+		return 0;
+	}
+	
+	/** Return a double, adds the current node's distance from start to 
+	 * the length of the path between current node to some node mn to
+	 * the distance between mn's node to the goal. Used in Astar algorithm
+	 * 
+	 * @param mn: a MapNode that represents the next mapNode to look at
+	 * @param gp: a GeographicPoint that represents the goal we are trying to get to
+	 * @return double
+	 */
+	public double calcDistFromStart(MapNode mn, GeographicPoint gp) {
+		//double prevNodeDist = mn.getDistFromStart();
+		double pathLength = nodeToNode.get(mn.getCoord());
+		double distFromGoal = mn.getCoord().distance(gp);
+
+		return this.getDistFromStart()+pathLength+distFromGoal;
+	}
+	
+	/** Return a double, adds the current node's distance from start to 
+	 * the length of the path between current node. Used in Dijkstra's algorithm
+	 * 
+	 * @param mn: a MapNode that represents the next mapNode to look at
+	 * @return double
+	 */
+	public double calcDistFromStart(MapNode mn) {
+		
+		double pathLength = nodeToNode.get(mn.getCoord());
+		
+		
+		return this.getDistFromStart()+pathLength;
+	}
+	
+	public boolean setDistFromStart(double d) {
+		distFromStart = d;
+		return true;
+	}
+	
+	public double getDistFromStart() {
+		double holder = distFromStart;
+		return holder;
 	}
 	
 	/** Return a list of out-neighbors from calling vertex/node
@@ -58,6 +118,7 @@ public class MapNode{
 			else{currGP = currEdge.getEnd();}
 			if(!currGP.equals(node)) {
 				neighbors.add(currGP);
+				nodeToNode.put(currGP, currEdge.getLength());
 			}
 		}
 		return neighbors;
@@ -81,4 +142,6 @@ public class MapNode{
 		List<MapEdge> holder = adjEdges;
 		return holder;		
 	}
+
+	
 }

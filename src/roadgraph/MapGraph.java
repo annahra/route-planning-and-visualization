@@ -9,17 +9,18 @@ package roadgraph;
 
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.function.Consumer;
 
 import geography.GeographicPoint;
 import util.GraphLoader;
-import week3example.MazeNode;
 
 /**
  * @author UCSD MOOC development team and YOU
@@ -29,20 +30,20 @@ import week3example.MazeNode;
  *
  */
 public class MapGraph {
-	//TODO: Add your member variables here in WEEK 3
 	private HashMap<GeographicPoint, MapNode> mainMap;
 	private int numNodes;
 	private int numEdges;
+	private boolean isFound;
 	
 	/** 
 	 * Create a new empty MapGraph 
 	 */
 	public MapGraph()
 	{
-		// TODO: Implement in this constructor in WEEK 3
 		mainMap = new HashMap<GeographicPoint, MapNode>();
 		numNodes = 0;
 		numEdges = 0;
+		isFound = false;
 	}
 	
 	/**
@@ -116,7 +117,6 @@ public class MapGraph {
 	public void addEdge(GeographicPoint from, GeographicPoint to, String roadName,
 			String roadType, double length) throws IllegalArgumentException {
 
-		//TODO: Implement this method in WEEK 3
 		if(!mainMap.containsKey(from) || !mainMap.containsKey(to)
 				|| length < 0 || from == null || to == null || roadName == null
 				|| roadType == null) {
@@ -157,6 +157,7 @@ public class MapGraph {
         Consumer<GeographicPoint> temp = (x) -> {};
         return bfs(start, goal, temp);
 	}
+	
 	
 	/** Find the path from start to goal using breadth first search
 	 * 
@@ -248,6 +249,72 @@ public class MapGraph {
         return dijkstra(start, goal, temp);
 	}
 	
+	/** Find the parentMap using Dijkstra's or AStar's algorithm
+	 * 
+	 * @param start: The starting location
+	 * @param goal: The goal location
+	 * @param nodeSearched: A hook for visualization.  See assignment instructions for how to use it.
+	 * @param type: indicates whether to use dijkstra's algorithm or astar
+	 * @return The map that keeps the path of geographic points to get from start to goal
+	 */
+	private Map<GeographicPoint,GeographicPoint> getMap(GeographicPoint start, 
+			  GeographicPoint goal, Consumer<GeographicPoint> nodeSearched, int type){
+		isFound = false;
+		Comparator<MapNode> comparator = new MapNode();
+		PriorityQueue<MapNode> queue = new PriorityQueue<MapNode>(comparator);
+		Set<MapNode> visited = new HashSet<MapNode>();
+		Map<GeographicPoint, GeographicPoint> parentMap = new HashMap<GeographicPoint, GeographicPoint>();
+		for(MapNode mn : mainMap.values()) {
+			mn.setDistFromStart(Double.POSITIVE_INFINITY);
+		}
+		MapNode currNode = mainMap.get(start);
+		currNode.setDistFromStart(0);
+		queue.add(currNode);
+		int count = 0;
+		//search!
+		while(queue.size() != 0) {
+			currNode = queue.remove();
+			count +=1;
+			nodeSearched.accept(currNode.getCoord());
+			if(!visited.contains(currNode)) {
+				visited.add(currNode);
+				if(currNode.getCoord().equals(goal)) {
+					isFound = true;
+					System.out.println(count);
+					return parentMap;
+				}
+				List<GeographicPoint> neighbors = currNode.getNeighbors();
+				
+				for(GeographicPoint currNeighbor : neighbors) {
+					
+					MapNode nextNode = mainMap.get(currNeighbor);
+					if(!visited.contains(nextNode)) {
+						//set dist from start
+						double currDist = nextNode.getDistFromStart();
+						if(type == 1) {
+							currDist = currNode.calcDistFromStart(nextNode);
+							//System.out.println("Dijkstra: "+currNode.getCoord()+" to "+nextNode.getCoord()+" : "+currDist);
+						}
+						else {
+							currDist = currNode.calcDistFromStart(nextNode,goal);
+							//System.out.println("Astar: "+currNode.getCoord()+" to "+nextNode.getCoord()+" : "+currDist);
+						}
+						if(currDist < nextNode.getDistFromStart()) {
+							nextNode.setDistFromStart(currDist);
+							parentMap.put(nextNode.getCoord(), currNode.getCoord());
+							
+							queue.add(nextNode);
+						}
+						
+					}
+				}
+			}
+		}
+		
+		return parentMap;
+	}
+	
+	
 	/** Find the path from start to goal using Dijkstra's algorithm
 	 * 
 	 * @param start The starting location
@@ -259,12 +326,20 @@ public class MapGraph {
 	public List<GeographicPoint> dijkstra(GeographicPoint start, 
 										  GeographicPoint goal, Consumer<GeographicPoint> nodeSearched)
 	{
-		// TODO: Implement this method in WEEK 4
-
-		// Hook for visualization.  See writeup.
-		//nodeSearched.accept(next.getLocation());
 		
-		return null;
+		if (start == null || goal == null) {
+			System.out.println("Start or goal node is null!  No path exists.");
+			return null;
+		}
+		Map<GeographicPoint,GeographicPoint> parentMap = getMap(start,goal,nodeSearched,1);
+		//for case not found
+		if(!isFound) {
+			System.out.println("No path exists");
+			return null;
+		}
+				
+		return reconstructPath(parentMap,goal,start);		
+		
 	}
 
 	/** Find the path from start to goal using A-Star search
@@ -291,12 +366,19 @@ public class MapGraph {
 	public List<GeographicPoint> aStarSearch(GeographicPoint start, 
 											 GeographicPoint goal, Consumer<GeographicPoint> nodeSearched)
 	{
-		// TODO: Implement this method in WEEK 4
+		if (start == null || goal == null) {
+			System.out.println("Start or goal node is null!  No path exists.");
+			return null;
+		}
+		Map<GeographicPoint,GeographicPoint> parentMap = getMap(start,goal,nodeSearched,5);
+		//for case not found
+		if(!isFound) {
+			System.out.println("No path exists");
+			return null;
+		}
 		
-		// Hook for visualization.  See writeup.
-		//nodeSearched.accept(next.getLocation());
+		return reconstructPath(parentMap,goal,start);		
 		
-		return null;
 	}
 
 	
@@ -316,52 +398,63 @@ public class MapGraph {
 		 * the Week 3 End of Week Quiz, EVEN IF you score 100% on the 
 		 * programming assignment.
 		 */
-		/*
-		MapGraph simpleTestMap = new MapGraph();
-		GraphLoader.loadRoadMap("data/testdata/simpletest.map", simpleTestMap);
 		
-		GeographicPoint testStart = new GeographicPoint(1.0, 1.0);
-		GeographicPoint testEnd = new GeographicPoint(8.0, -1.0);
+//		MapGraph simpleTestMap = new MapGraph();
+//		GraphLoader.loadRoadMap("data/testdata/simpletest.map", simpleTestMap);
+//		
+//		GeographicPoint testStart = new GeographicPoint(1.0, 1.0);
+//		GeographicPoint testEnd = new GeographicPoint(8.0, -1.0);
+//		
+//		System.out.println("Test 1 using simpletest: Dijkstra should be 9 and AStar should be 5");
+//		List<GeographicPoint> testroute = simpleTestMap.dijkstra(testStart,testEnd);
+//		List<GeographicPoint> testroute2 = simpleTestMap.aStarSearch(testStart,testEnd);
 		
-		System.out.println("Test 1 using simpletest: Dijkstra should be 9 and AStar should be 5");
-		List<GeographicPoint> testroute = simpleTestMap.dijkstra(testStart,testEnd);
-		List<GeographicPoint> testroute2 = simpleTestMap.aStarSearch(testStart,testEnd);
+//		
+
 		
+//		MapGraph testMap = new MapGraph();
+//		GraphLoader.loadRoadMap("data/maps/utc.map", testMap);
+////		
+//		// A very simple test using real data
+//		testStart = new GeographicPoint(32.869423, -117.220917);
+//		testEnd = new GeographicPoint(32.869255, -117.216927);
+//		System.out.println("Test 2 using utc: Dijkstra should be 13 and AStar should be 5");
+//		testroute = testMap.dijkstra(testStart,testEnd);
+//		testroute2 = testMap.aStarSearch(testStart,testEnd);
+//		
+////		
+//		// A slightly more complex test using real data
+//		testStart = new GeographicPoint(32.8674388, -117.2190213);
+//		testEnd = new GeographicPoint(32.8697828, -117.2244506);
+//		System.out.println("Test 3 using utc: Dijkstra should be 37 and AStar should be 10");
+//		testroute = testMap.dijkstra(testStart,testEnd);
+//		testroute2 = testMap.aStarSearch(testStart,testEnd);
+//		
+//		
+//		for(GeographicPoint gp: testroute) {
+//			System.out.println(gp);
+//		}
+//		System.out.println("-----------");
+//		for(GeographicPoint gp: testroute2) {
+//			System.out.println(gp);
+//		}		
 		
-		MapGraph testMap = new MapGraph();
-		GraphLoader.loadRoadMap("data/maps/utc.map", testMap);
-		
-		// A very simple test using real data
-		testStart = new GeographicPoint(32.869423, -117.220917);
-		testEnd = new GeographicPoint(32.869255, -117.216927);
-		System.out.println("Test 2 using utc: Dijkstra should be 13 and AStar should be 5");
-		testroute = testMap.dijkstra(testStart,testEnd);
-		testroute2 = testMap.aStarSearch(testStart,testEnd);
-		
-		
-		// A slightly more complex test using real data
-		testStart = new GeographicPoint(32.8674388, -117.2190213);
-		testEnd = new GeographicPoint(32.8697828, -117.2244506);
-		System.out.println("Test 3 using utc: Dijkstra should be 37 and AStar should be 10");
-		testroute = testMap.dijkstra(testStart,testEnd);
-		testroute2 = testMap.aStarSearch(testStart,testEnd);
-		*/
 		
 		
 		/* Use this code in Week 3 End of Week Quiz */
-		/*MapGraph theMap = new MapGraph();
-		System.out.print("DONE. \nLoading the map...");
-		GraphLoader.loadRoadMap("data/maps/utc.map", theMap);
-		System.out.println("DONE.");
-
-		GeographicPoint start = new GeographicPoint(32.8648772, -117.2254046);
-		GeographicPoint end = new GeographicPoint(32.8660691, -117.217393);
+//		MapGraph theMap = new MapGraph();
+//		System.out.print("DONE. \nLoading the map...");
+//		GraphLoader.loadRoadMap("data/maps/utc.map", theMap);
+//		System.out.println("DONE.");
+//
+//		GeographicPoint start = new GeographicPoint(32.8648772, -117.2254046);
+//		GeographicPoint end = new GeographicPoint(32.8660691, -117.217393);
+//		
+//		
+//		List<GeographicPoint> route = theMap.dijkstra(start,end);
+//		List<GeographicPoint> route2 = theMap.aStarSearch(start,end);
 		
 		
-		List<GeographicPoint> route = theMap.dijkstra(start,end);
-		List<GeographicPoint> route2 = theMap.aStarSearch(start,end);
-
-		*/
 		
 	}
 	
