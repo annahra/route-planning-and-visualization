@@ -26,9 +26,9 @@ You can use the front end to generate raw map data files. Then you can use the G
 
 4. When the fetch completes, another dialog box will appear. Your data file is now in the data/maps folder. You probably need to right-click on it and select "Refresh" in Eclipse to see it.
 
-4a. If you want your new map file to appear in the list of files available in the app when you restart it, you need to add it to the file mapfiles.list. You can find this file in the data/maps folder. Just open that file and type the name of the map file you just created then save that file. Your new map will appear in the list when you open the Map app in the future.
+5. If you want your new map file to appear in the list of files available in the app when you restart it, you need to add it to the file mapfiles.list. You can find this file in the data/maps folder. Just open that file and type the name of the map file you just created then save that file. Your new map will appear in the list when you open the Map app in the future.
 
-5. In the main method of the util.GraphLoader class (in the file util/GraphLoader.java just above the class header for the RoadLineInfo class, which is declared in the same file), you will see the following code:
+6. In the main method of the util.GraphLoader class (in the file util/GraphLoader.java just above the class header for the RoadLineInfo class, which is declared in the same file), you will see the following code:
 
 ```
 public static void main(String[] args) {
@@ -46,17 +46,9 @@ Change YOURFILE to be the name of the file you just saved from the front end and
 
 ## Deployment
 
-Once you've download this project, you will need to install all of the packages included in the package.json file. To do this, cd into the project directory and run 
+To deploy the application locally, navigate to src -> application -> MapApp.java and press run. The application should pop up as a new window. You can then load your map file under the **Choose map file** section, and hit **Show Intersections**.
 
-```
-npm install
-```
-
-To deploy this application on your localhost, cd into the project directory and run
-
-```
-ionic serve
-```
+Then select a start and destination point and pick any of the three algorithms to plan your route, and hit **Show Route**. Then hit **Start Visualization** and a pop up window should appear telling you how many nodes it took to find that route. When you exit out of the popup, you will see how the algorithm calculates the route.
 
 ## Built With
 
