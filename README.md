@@ -10,36 +10,39 @@ You may also choose to get a [Google API Key](https://developers.google.com/maps
 
 ### Setup
 
-Importing the project into Eclipse: 
-	1. Create a new Java Project in your workspace
-	2. Import the starter files:
-	  File -> Import -> Select "File System" -> Next -> Browse and set 
-	  root directory to folder contents -> Finish
+To import the project into Eclipse, first create a new Java Project in the Eclipse workspace. Then perform the import using File -> Import -> Select "File System" -> Next -> Browse and set root directory to folder contents -> Finish
 
 Feel free to use another IDE or manually compile and run your programs.
 
-### Prerequisites
+### Generate your own map files
 
-To install Node.js and npm, follow this [link](https://www.npmjs.com/get-npm). Verify you've correctly installed both Node.js and npm by running the following commands:
+You can use the front end to generate raw map data files. Then you can use the GraphLoader utility class to convert these files into an intersections file, which is suitable for use in the graph visualization tool.
 
-```
-node --version
-npm --version
-```
+1. Navigate the map to the section you would like to collect data for. The application will fetch all of the road data in the visible part of the map. **Note**: Make sure this region is not too big or the file will be gigantic and it will take forever to download. The data for a single small to medium city is about as large as we recommend.
 
-To install the [Angular CLI](https://angular.io/guide/setup-local) and to verify that the installation was successful, run the following :
+2. Enter a name for your map data file in the text box in the bottom left corner of the window. This name must end with the extension .map and it will be automatically saved into the data/maps folder.
 
-```
-npm install -g @angular/cli
-ng --version
-```
+3. Click the "Fetch data" button. You will see a dialog box informing you that the fetching is occurring in the background. The "Fetch data" button  is disabled as long as the data is still being fetched. **Note**: this process can take several minutes.
 
-To install the [Ionic CLI](https://ionicframework.com/docs/intro/cli) and to verify that the installation was successful, run the following:
+4. When the fetch completes, another dialog box will appear. Your data file is now in the data/maps folder. You probably need to right-click on it and select "Refresh" in Eclipse to see it.
+
+4a. If you want your new map file to appear in the list of files available in the app when you restart it, you need to add it to the file mapfiles.list. You can find this file in the data/maps folder. Just open that file and type the name of the map file you just created then save that file. Your new map will appear in the list when you open the Map app in the future.
+
+5. In the main method of the util.GraphLoader class (in the file util/GraphLoader.java just above the class header for the RoadLineInfo class, which is declared in the same file), you will see the following code:
 
 ```
-npm -g install -g @ionic/cli
-ionic --version
+public static void main(String[] args) {
+    //...
+    // To use this method to convert your custom map files to custom 
+    //intersections files just change YOURFILE in the Strings below 
+    //to be the name of the file you saved.
+    GraphLoader.createIntesectionsFile("data/maps/YOURFILE.map",
+                                       "data/intersections/YOURFILE.intersections");
+}
 ```
+
+Change YOURFILE to be the name of the file you just saved from the front end and then run this class. You will see your .intersections file appear in the data/intersections directory. Again, from Eclipse you will need to right-click on the data directory and select Refresh.
+
 
 ## Deployment
 
