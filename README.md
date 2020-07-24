@@ -1,12 +1,16 @@
 # Route Planning and Navigation with Google API
 
-AccountAbility is a concept for a social media mobile application where users are dedicated to fact-checking news claims/sources and general media. The first tab of the app allows users to sort media by different categories, the second tab allows the user to read different news articles and comment on them, and the third tab shows a user's profile which allows other users to comment on the user's method of claim evaluation.
+This project was apart of UCSD's online Java course designed to apply object oriented programming oncepts, become familar with the Google Maps API, implement famous graph algorithms, and compare their run times. In this project, I learned to implement the Breadth First Search(BFS) Algorithm, Dijkstra's algorithm, and the A* algorithm. I have learned that, for the specific problem of finding a route, out of all three algorithms, A* is the most efficient (on average finding the route using only half the nodes that BFS and Dijkstra uses). 
+
+This is interesting because BFS' time complexity is usually O(|V|+|E|) where V is number of vertices in the graph and E is the number of edges, and Dijkstra's and A*'s time complexities are on average O((|V|+|E|)\**log(|V|)*). However, BFS' time complexity is usually for elementary graphs, whereas, in the case of route finding, the problem becomes much larger as the number of possible vertices and edges increase based on the size of the map area. 
+
+In this problem, it is much more beneficial to use a *heuristic*, which is a function that ranks alternative routes at each step based on some form of available information. In our context, the "information" is the distance between a vertex and the destination point. With this slight change, the algorithm will not visit vertices which are further away from the destination point. In Dijkstra's Algorithm, this heuristic term is equal to 0 which is why Dijkstra's performs similarly to BFS. However in the A* algorithm, the heuristic term is not zero, therefore, using a [Priority Queue](https://docs.oracle.com/javase/7/docs/api/java/util/PriorityQueue.html) and coupling my MapVertex class with a [Comparable Interface](https://docs.oracle.com/javase/8/docs/api/java/lang/Comparable.html), I was able to reduce the run time by prioritizing which vertices to visit over others based on the distance from the previous vertex to the current vertex, and the distance from the current vertex to the destination point. 
 
 ## Getting Started
 
 You will need the [Eclipse IDE](https://www.eclipse.org/), and the [Java 8](https://www.oracle.com/java/technologies/javase-jre8-downloads.html) runtime environment. It is very important that you do not use anything greater than Java 8 as this project uses [Unfolding Maps](http://unfoldingmaps.org/), which has certain Java 8 dependencies which are deprecated in later versions.
 
-You may also choose to get a [Google API Key](https://developers.google.com/maps/documentation/javascript/get-api-key), but it is not necessary. If you don't have one, the map interface will have the text "Developer Mode" plastered over it. 
+You may also choose to get a [Google API Key](https://developers.google.com/maps/documentation/javascript/get-api-key), but it is not necessary. If you don't have one, the map interface will have the text "Developer Mode" plastered over it, but will still be functional. 
 
 ### Setup
 
@@ -52,9 +56,11 @@ Then select a start and destination point and pick any of the three algorithms t
 
 ## Built With
 
-* [Ionic](https://ionicframework.com/docs) - The web framework used
-* [Angular](https://angular.io/docs) - The framework with which Ionic is built upon
-* [News API](https://newsapi.org/docs) - Used to generate news articles
-* [Random User API](https://randomuser.me) - Used to generate random users for show
+* [Java 8](https://www.oracle.com/java/technologies/javase-jre8-downloads.html) - Programming language used
+* [Google Maps API](https://cloud.google.com/maps-platform/) - The geo-location framework used
+* [Unfolding Maps](http://unfoldingmaps.org/) - The library used to create interactive maps
 
+## Acknowledgements
+
+I would like to give credit to the UCSD MOOC team for creating the course, the instructions, and the UI and engine for the application.
 
